@@ -1,0 +1,20 @@
+oneai:
+  addr: :8080
+auth:
+  api_key: 'YOUR-API-KEY'
+
+embedding:
+  # To encode queries, use `rocketqa-query` as the model name.
+  # To encode documents, use `rocketqa-document` as the model name.
+  rocketqa:
+    # See https://github.com/go-aie/rocketqa for details.
+    model_path: /path/to/zh_dureader_de_v2.pdmodel
+    params_path: /path/to/zh_dureader_de_v2.pdiparams
+    vocab_file: /path/to/zh_vocab.txt
+llm:
+  chatglm:
+    # See https://github.com/go-aie/chatglm for details.
+    model_path: /path/to/chatglm-ggml.bin
+vector_store:
+  # In-Memory vector storage.
+  memory:
