@@ -14,7 +14,7 @@ func init() {
 
 // Auth implements httpcodec.ParamCodec to encode and decode the `Authorization` header.
 type Auth struct {
-	Token string `structool:"api_key"`
+	Token string `structool:"token"`
 
 	Codecs *httpcodec.DefaultCodecs
 }
@@ -38,6 +38,11 @@ func (a *Auth) Init(ctx appx.Context) error {
 func (a *Auth) Decode(in []string, out interface{}) error {
 	// NOTE: never use out, which is nil here.
 
+	// Skip authentication if an empty token is specified.
+	if a.Token == "" {
+		return nil
+	}
+
 	if len(in) == 0 || in[0] != a.bearerToken() {
 		return fmt.Errorf("authentication failed")
 	}
@@ -47,6 +52,11 @@ func (a *Auth) Decode(in []string, out interface{}) error {
 // Encode encodes the `Authorization` header.
 func (a *Auth) Encode(in interface{}) (out []string) {
 	// NOTE: never use in, which is nil here.
+
+	// Skip authentication if an empty token is specified.
+	if a.Token == "" {
+		return nil
+	}
 
 	return []string{a.bearerToken()}
 }

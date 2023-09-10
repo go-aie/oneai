@@ -1,7 +1,8 @@
 oneai:
   addr: :8080
 auth:
-  api_key: 'YOUR-API-KEY'
+  # An empty token will disable authentication.
+  token: 'YOUR-TOKEN'
 
 embedding:
   # To encode queries, use `rocketqa-query` as the model name.
