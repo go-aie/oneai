@@ -42,8 +42,16 @@ func (e *Encoder) Encode(ctx context.Context, req *api.Request) (*api.Response, 
 		Object: "list",
 	}
 
+	var input []string
+	switch v := req.Input.Value.(type) {
+	case string:
+		input = []string{v}
+	case []string:
+		input = v
+	}
+
 	if req.Model == "rocketqa-query" {
-		vectors := e.DualEncoder.EncodeQuery(req.Input)
+		vectors := e.DualEncoder.EncodeQuery(input)
 		for i, vector := range vectors {
 			resp.Data = append(resp.Data, &api.Data{
 				Index:     i,
@@ -56,8 +64,8 @@ func (e *Encoder) Encode(ctx context.Context, req *api.Request) (*api.Response, 
 
 	// Model == "rocketqa-document"
 
-	titles := xslices.Repeat([]string{""}, len(req.Input))
-	vectors, err := e.DualEncoder.EncodePara(req.Input, titles)
+	titles := xslices.Repeat([]string{""}, len(input))
+	vectors, err := e.DualEncoder.EncodePara(input, titles)
 	if err != nil {
 		return nil, err
 	}

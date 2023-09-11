@@ -33,6 +33,7 @@ paths:
   /:
     post:
       description: ""
+      summary: ""
       operationId: "Encode"
       parameters:
         - name: Authorization
