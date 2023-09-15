@@ -36,7 +36,7 @@ func NewHTTPClient(codecs httpcodec.Codecs, httpClient *http.Client, baseURL str
 	}, nil
 }
 
-func (c *HTTPClient) Delete(ctx context.Context, vendor string, documentIDs ...string) (err error) {
+func (c *HTTPClient) Delete(ctx context.Context, vendor string, sourceIDs ...string) (err error) {
 	codec := c.codecs.EncodeDecoder("Delete")
 
 	path := "/delete"
@@ -47,11 +47,11 @@ func (c *HTTPClient) Delete(ctx context.Context, vendor string, documentIDs ...s
 	}
 
 	reqBody := struct {
-		Vendor      string   `json:"vendor"`
-		DocumentIDs []string `json:"document_i_ds"`
+		Vendor    string   `json:"vendor"`
+		SourceIDs []string `json:"source_i_ds"`
 	}{
-		Vendor:      vendor,
-		DocumentIDs: documentIDs,
+		Vendor:    vendor,
+		SourceIDs: sourceIDs,
 	}
 	reqBodyReader, headers, err := codec.EncodeRequestBody(&reqBody)
 	if err != nil {
@@ -147,7 +147,7 @@ func (c *HTTPClient) Query(ctx context.Context, vendor string, vector []float64,
 	return respBody.Similarities, nil
 }
 
-func (c *HTTPClient) Upsert(ctx context.Context, vendor string, chunks map[string][]*api.Chunk) (err error) {
+func (c *HTTPClient) Upsert(ctx context.Context, vendor string, documents []*api.Document) (err error) {
 	codec := c.codecs.EncodeDecoder("Upsert")
 
 	path := "/upsert"
@@ -158,11 +158,11 @@ func (c *HTTPClient) Upsert(ctx context.Context, vendor string, chunks map[strin
 	}
 
 	reqBody := struct {
-		Vendor string                  `json:"vendor"`
-		Chunks map[string][]*api.Chunk `json:"chunks"`
+		Vendor    string          `json:"vendor"`
+		Documents []*api.Document `json:"documents"`
 	}{
-		Vendor: vendor,
-		Chunks: chunks,
+		Vendor:    vendor,
+		Documents: documents,
 	}
 	reqBodyReader, headers, err := codec.EncodeRequestBody(&reqBody)
 	if err != nil {

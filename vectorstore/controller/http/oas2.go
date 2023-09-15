@@ -33,7 +33,8 @@ produces:
 paths:
   /delete:
     post:
-      description: ""
+      description: "deletes the chunks belonging to the given sourceIDs.\nAs a special case, empty documentIDs means deleting all chunks."
+      summary: "deletes the chunks belonging to the given sourceIDs.\nAs a special case, empty documentIDs means deleting all chunks."
       operationId: "Delete"
       parameters:
         - name: Authorization
@@ -49,6 +50,7 @@ paths:
   /query:
     post:
       description: ""
+      summary: ""
       operationId: "Query"
       parameters:
         - name: Authorization
@@ -64,6 +66,7 @@ paths:
   /upsert:
     post:
       description: ""
+      summary: ""
       operationId: "Upsert"
       parameters:
         - name: Authorization
@@ -91,8 +94,8 @@ func getDefinitions(schema oas2.Schema) map[string]oas2.Definition {
 	defs := make(map[string]oas2.Definition)
 
 	oas2.AddDefinition(defs, "DeleteRequestBody", reflect.ValueOf(&struct {
-		Vendor      string   `json:"vendor"`
-		DocumentIDs []string `json:"document_i_ds"`
+		Vendor    string   `json:"vendor"`
+		SourceIDs []string `json:"source_i_ds"`
 	}{}))
 	oas2.AddResponseDefinitions(defs, schema, "Delete", 200, (&endpoint.DeleteResponse{}).Body())
 
@@ -104,8 +107,8 @@ func getDefinitions(schema oas2.Schema) map[string]oas2.Definition {
 	oas2.AddResponseDefinitions(defs, schema, "Query", 200, (&endpoint.QueryResponse{}).Body())
 
 	oas2.AddDefinition(defs, "UpsertRequestBody", reflect.ValueOf(&struct {
-		Vendor string                  `json:"vendor"`
-		Chunks map[string][]*api.Chunk `json:"chunks"`
+		Vendor    string          `json:"vendor"`
+		Documents []*api.Document `json:"documents"`
 	}{}))
 	oas2.AddResponseDefinitions(defs, schema, "Upsert", 200, (&endpoint.UpsertResponse{}).Body())
 

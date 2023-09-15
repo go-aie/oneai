@@ -13,22 +13,23 @@ import (
 
 // Memory is an in-memory vector store.
 type Memory struct {
-	chunks map[string][]*api.Chunk
-	mu     sync.RWMutex
+	documents map[string][]*api.Document
+	mu        sync.RWMutex
 }
 
 func New() *Memory {
 	return &Memory{
-		chunks: make(map[string][]*api.Chunk),
+		documents: make(map[string][]*api.Document),
 	}
 }
 
-func (m *Memory) Upsert(ctx context.Context, vendor string, chunks map[string][]*api.Chunk) error {
+func (m *Memory) Upsert(ctx context.Context, vendor string, documents []*api.Document) error {
 	m.mu.Lock()
 	defer m.mu.Unlock()
 
-	for documentID, chunkList := range chunks {
-		m.chunks[documentID] = append(m.chunks[documentID], chunkList...)
+	for _, doc := range documents {
+		sourceID := doc.Metadata.SourceID
+		m.documents[sourceID] = append(m.documents[sourceID], doc)
 	}
 	return nil
 }
@@ -43,14 +44,14 @@ func (m *Memory) Query(ctx context.Context, vendor string, vector []float64, top
 
 	target := mat.NewVecDense(len(vector), vector)
 
-	var similarities []*api.Similarity
-	for _, chunks := range m.chunks {
-		for _, chunk := range chunks {
-			candidate := mat.NewVecDense(len(chunk.Vector), chunk.Vector)
+	similarities := make([]*api.Similarity, 0, topK) // Avoid null JSON array.
+	for _, docs := range m.documents {
+		for _, doc := range docs {
+			candidate := mat.NewVecDense(len(doc.Vector), doc.Vector)
 			score := mat.Dot(target, candidate)
 			similarities = append(similarities, &api.Similarity{
-				Chunk: chunk,
-				Score: score,
+				Document: doc,
+				Score:    score,
 			})
 		}
 	}
@@ -72,17 +73,17 @@ func (m *Memory) Query(ctx context.Context, vendor string, vector []float64, top
 	return similarities[:topK], nil
 }
 
-// Delete deletes the chunks belonging to the given documentIDs.
+// Delete deletes the chunks belonging to the given sourceIDs.
 // As a special case, empty documentIDs means deleting all chunks.
-func (m *Memory) Delete(ctx context.Context, vendor string, documentIDs ...string) error {
+func (m *Memory) Delete(ctx context.Context, vendor string, sourceIDs ...string) error {
 	m.mu.Lock()
 	defer m.mu.Unlock()
 
-	if len(documentIDs) == 0 {
-		maps.Clear(m.chunks)
+	if len(sourceIDs) == 0 {
+		maps.Clear(m.documents)
 	}
-	for _, documentID := range documentIDs {
-		delete(m.chunks, documentID)
+	for _, sourceID := range sourceIDs {
+		delete(m.documents, sourceID)
 	}
 
 	return nil

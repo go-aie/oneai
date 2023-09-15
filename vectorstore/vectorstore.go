@@ -58,12 +58,12 @@ func (v *VectorStore) Init(ctx appx.Context) error {
 	return nil
 }
 
-func (v *VectorStore) Upsert(ctx context.Context, vendor string, chunks map[string][]*api.Chunk) error {
+func (v *VectorStore) Upsert(ctx context.Context, vendor string, documents []*api.Document) error {
 	store, ok := v.stores[vendor]
 	if !ok {
 		return werror.Wrapf(gcode.ErrInvalidArgument, "unsupported vendor: %s", vendor)
 	}
-	return store.Upsert(ctx, vendor, chunks)
+	return store.Upsert(ctx, vendor, documents)
 }
 
 func (v *VectorStore) Query(ctx context.Context, vendor string, vector []float64, topK int) (similarities []*api.Similarity, err error) {
@@ -74,10 +74,10 @@ func (v *VectorStore) Query(ctx context.Context, vendor string, vector []float64
 	return store.Query(ctx, vendor, vector, topK)
 }
 
-func (v *VectorStore) Delete(ctx context.Context, vendor string, documentIDs ...string) error {
+func (v *VectorStore) Delete(ctx context.Context, vendor string, sourceIDs ...string) error {
 	store, ok := v.stores[vendor]
 	if !ok {
 		return werror.Wrapf(gcode.ErrInvalidArgument, "unsupported vendor: %s", vendor)
 	}
-	return store.Delete(ctx, vendor, documentIDs...)
+	return store.Delete(ctx, vendor, sourceIDs...)
 }

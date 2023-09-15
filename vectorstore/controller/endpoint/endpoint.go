@@ -13,8 +13,8 @@ import (
 )
 
 type DeleteRequest struct {
-	Vendor      string   `json:"vendor"`
-	DocumentIDs []string `json:"document_i_ds"`
+	Vendor    string   `json:"vendor"`
+	SourceIDs []string `json:"source_i_ds"`
 }
 
 // ValidateDeleteRequest creates a validator for DeleteRequest.
@@ -41,7 +41,7 @@ func MakeEndpointOfDelete(s api.VectorStore) endpoint.Endpoint {
 		err := s.Delete(
 			ctx,
 			req.Vendor,
-			req.DocumentIDs...,
+			req.SourceIDs...,
 		)
 		return &DeleteResponse{
 			Err: err,
@@ -91,8 +91,8 @@ func MakeEndpointOfQuery(s api.VectorStore) endpoint.Endpoint {
 }
 
 type UpsertRequest struct {
-	Vendor string                  `json:"vendor"`
-	Chunks map[string][]*api.Chunk `json:"chunks"`
+	Vendor    string          `json:"vendor"`
+	Documents []*api.Document `json:"documents"`
 }
 
 // ValidateUpsertRequest creates a validator for UpsertRequest.
@@ -119,7 +119,7 @@ func MakeEndpointOfUpsert(s api.VectorStore) endpoint.Endpoint {
 		err := s.Upsert(
 			ctx,
 			req.Vendor,
-			req.Chunks,
+			req.Documents,
 		)
 		return &UpsertResponse{
 			Err: err,
