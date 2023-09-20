@@ -50,9 +50,10 @@ func MakeEndpointOfDelete(s api.VectorStore) endpoint.Endpoint {
 }
 
 type QueryRequest struct {
-	Vendor string    `json:"vendor"`
-	Vector []float64 `json:"vector"`
-	TopK   int       `json:"top_k"`
+	Vendor   string    `json:"vendor"`
+	Vector   []float64 `json:"vector"`
+	TopK     int       `json:"top_k"`
+	MinScore float64   `json:"min_score"`
 }
 
 // ValidateQueryRequest creates a validator for QueryRequest.
@@ -82,6 +83,7 @@ func MakeEndpointOfQuery(s api.VectorStore) endpoint.Endpoint {
 			req.Vendor,
 			req.Vector,
 			req.TopK,
+			req.MinScore,
 		)
 		return &QueryResponse{
 			Similarities: similarities,

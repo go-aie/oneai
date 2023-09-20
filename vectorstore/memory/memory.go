@@ -34,7 +34,7 @@ func (m *Memory) Upsert(ctx context.Context, vendor string, documents []*api.Doc
 	return nil
 }
 
-func (m *Memory) Query(ctx context.Context, vendor string, vector []float64, topK int) ([]*api.Similarity, error) {
+func (m *Memory) Query(ctx context.Context, vendor string, vector []float64, topK int, minScore float64) ([]*api.Similarity, error) {
 	m.mu.RLock()
 	defer m.mu.RUnlock()
 
@@ -49,10 +49,12 @@ func (m *Memory) Query(ctx context.Context, vendor string, vector []float64, top
 		for _, doc := range docs {
 			candidate := mat.NewVecDense(len(doc.Vector), doc.Vector)
 			score := mat.Dot(target, candidate)
-			similarities = append(similarities, &api.Similarity{
-				Document: doc,
-				Score:    score,
-			})
+			if score >= minScore {
+				similarities = append(similarities, &api.Similarity{
+					Document: doc,
+					Score:    score,
+				})
+			}
 		}
 	}
 

@@ -88,7 +88,7 @@ func (c *HTTPClient) Delete(ctx context.Context, vendor string, sourceIDs ...str
 	return nil
 }
 
-func (c *HTTPClient) Query(ctx context.Context, vendor string, vector []float64, topK int) (similarities []*api.Similarity, err error) {
+func (c *HTTPClient) Query(ctx context.Context, vendor string, vector []float64, topK int, minScore float64) (similarities []*api.Similarity, err error) {
 	codec := c.codecs.EncodeDecoder("Query")
 
 	path := "/query"
@@ -99,13 +99,15 @@ func (c *HTTPClient) Query(ctx context.Context, vendor string, vector []float64,
 	}
 
 	reqBody := struct {
-		Vendor string    `json:"vendor"`
-		Vector []float64 `json:"vector"`
-		TopK   int       `json:"top_k"`
+		Vendor   string    `json:"vendor"`
+		Vector   []float64 `json:"vector"`
+		TopK     int       `json:"top_k"`
+		MinScore float64   `json:"min_score"`
 	}{
-		Vendor: vendor,
-		Vector: vector,
-		TopK:   topK,
+		Vendor:   vendor,
+		Vector:   vector,
+		TopK:     topK,
+		MinScore: minScore,
 	}
 	reqBodyReader, headers, err := codec.EncodeRequestBody(&reqBody)
 	if err != nil {

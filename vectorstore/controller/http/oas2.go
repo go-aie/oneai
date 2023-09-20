@@ -100,9 +100,10 @@ func getDefinitions(schema oas2.Schema) map[string]oas2.Definition {
 	oas2.AddResponseDefinitions(defs, schema, "Delete", 200, (&endpoint.DeleteResponse{}).Body())
 
 	oas2.AddDefinition(defs, "QueryRequestBody", reflect.ValueOf(&struct {
-		Vendor string    `json:"vendor"`
-		Vector []float64 `json:"vector"`
-		TopK   int       `json:"top_k"`
+		Vendor   string    `json:"vendor"`
+		Vector   []float64 `json:"vector"`
+		TopK     int       `json:"top_k"`
+		MinScore float64   `json:"min_score"`
 	}{}))
 	oas2.AddResponseDefinitions(defs, schema, "Query", 200, (&endpoint.QueryResponse{}).Body())
 

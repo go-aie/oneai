@@ -13,7 +13,7 @@ type VectorStore interface {
 
 	//kun:op POST /query
 	//kun:param __ in=header name=Authorization required=true
-	Query(ctx context.Context, vendor string, vector []float64, topK int) (similarities []*Similarity, err error)
+	Query(ctx context.Context, vendor string, vector []float64, topK int, minScore float64) (similarities []*Similarity, err error)
 
 	// Delete deletes the chunks belonging to the given sourceIDs.
 	// As a special case, empty documentIDs means deleting all chunks.
