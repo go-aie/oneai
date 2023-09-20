@@ -56,7 +56,7 @@ func (e *Encoder) Encode(ctx context.Context, req *api.Request) (*api.Response, 
 			resp.Data = append(resp.Data, &api.Data{
 				Index:     i,
 				Object:    "embedding",
-				Embedding: vector.ToFloat64(),
+				Embedding: vector.Norm().ToFloat64(),
 			})
 		}
 		return resp, nil
@@ -73,7 +73,7 @@ func (e *Encoder) Encode(ctx context.Context, req *api.Request) (*api.Response, 
 		resp.Data = append(resp.Data, &api.Data{
 			Index:     i,
 			Object:    "embedding",
-			Embedding: vector.ToFloat64(),
+			Embedding: vector.Norm().ToFloat64(),
 		})
 	}
 
