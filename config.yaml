@@ -19,3 +19,7 @@ llm:
 vector_store:
   # In-Memory vector storage.
   memory:
+  # milvus:
+  #   addr: localhost:19530
+  #   collection_name: test
+  #   dim: 768  # embedding dimension of rocketqa

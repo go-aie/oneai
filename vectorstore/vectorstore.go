@@ -2,7 +2,6 @@ package vectorstore
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/RussellLuo/appx"
 	"github.com/RussellLuo/kun/pkg/appx/httpapp"
@@ -15,6 +14,7 @@ import (
 	"github.com/go-aie/oneai/vectorstore/api"
 	"github.com/go-aie/oneai/vectorstore/controller/http"
 	"github.com/go-aie/oneai/vectorstore/memory"
+	"github.com/go-aie/oneai/vectorstore/milvus"
 )
 
 func init() {
@@ -43,11 +43,20 @@ func (v *VectorStore) Init(ctx appx.Context) error {
 	}
 
 	v.stores = make(map[string]api.VectorStore)
-	for vendor := range configs {
+	for vendor, config := range configs {
 		switch vendor {
 		case "memory":
-			fmt.Println("init memory vector store")
 			store := memory.New()
+			v.stores[vendor] = store
+		case "milvus":
+			var cfg *milvus.Config
+			if err := codec.Decode(config, &cfg); err != nil {
+				return err
+			}
+			store, err := milvus.New(cfg)
+			if err != nil {
+				return err
+			}
 			v.stores[vendor] = store
 		}
 	}
